@@ -1,52 +1,28 @@
 package serwerczatu;
 import java.io.*;
 import java.net.*;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 public class SerwerCzatu 
 {
-	ArrayList strumienieWyjsciowe;
-	public class ObslugaKlientow implements Runnable{
-		BufferedReader czytelnik;
-		Socket gniazdo;
-		
-		public ObslugaKlientow(Socket clientSocket)
-		{
-			try 
-			{
-				gniazdo = clientSocket;
-				InputStreamReader isReader = new InputStreamReader(gniazdo.getInputStream());
-				czytelnik = new BufferedReader(isReader);
-			}
-			catch(Exception ex)
-			{ex.printStackTrace();}
-			
-		}
-		
-		public void run(){
-			String wiadomosc;
-			System.out.println("Jestem w runie");
-			try{
-				while ((wiadomosc = czytelnik.readLine()) !=null)
-				{
-					System.out.println("Odczytano: "+wiadomosc);
-					rozeslijDoWszystkich(wiadomosc);
-					System.out.println("Jestem w petli");
-				}
-			}
-			catch(Exception ex)
-			{ex.printStackTrace();}
-		}
+	ArrayList <Klient> klienci= new ArrayList();
+	//ObslugaKlientow obslugaKlientow = new ObslugaKlientow();
+	Connection polaczenieZBaza;
+	
+	SerwerCzatu(Connection polaczenieZBaza)
+	{
+		this.polaczenieZBaza= polaczenieZBaza;
 	}
+		
 	public void rozeslijDoWszystkich(String message)
 	{
-		Iterator it = strumienieWyjsciowe.iterator(); 
-		while(it.hasNext())
+		for (int i = 0 ; i < klienci.size();i++)
 		{
 			try{
-				PrintWriter pisarz = (PrintWriter) it.next();
+				PrintWriter pisarz = new PrintWriter(klienci.get(i).getGniazdo().getOutputStream());
 				pisarz.println(message);
 				pisarz.flush();
 				System.out.println("Wysylanie");
@@ -62,18 +38,22 @@ public class SerwerCzatu
 	}
 	public void serwerStart()
 	{
-		strumienieWyjsciowe = new ArrayList();
 		try {
-			ServerSocket serwerSock = new ServerSocket(5000);
+			ServerSocket serwerSock = new ServerSocket(5000); // tworzy serwer monitorujacy port 5000
 			while(true)
 			{
-				Socket gniazdoKlienta = serwerSock.accept();
-				PrintWriter pisarz = new PrintWriter(gniazdoKlienta.getOutputStream());
-				strumienieWyjsciowe.add(pisarz);
+				Socket gniazdoKlienta = serwerSock.accept(); // program oczekuje az klient przylaczy sie do portu
+				// jesli jakis klient sie polaczy, metoda zwroci obiekt klasy SOcket repzentujacy utworzone 
+				// polaczenie
+				klienci.add(new Klient(gniazdoKlienta, polaczenieZBaza));
+				//PrintWriter pisarz = new PrintWriter(gniazdoKlienta.getOutputStream());
+				// do pisarza przypisuje strumien wyjsciowy z gniazda stworzonego wyzej
 				
-				Thread t = new Thread (new ObslugaKlientow(gniazdoKlienta));
-				t.start();
-				System.out.println("mamy połączenie");	
+				
+				//Thread t = new Thread (new ObslugaKlientow(gniazdoKlienta)); // nowy watek na podstawie
+				// obiektu klasy wewnetrznej gniazdo klienta
+				//t.start(); // odpalony watek
+				System.out.println("mamy polaczenie");	
 			}
 		}
 		catch(Exception ex)
