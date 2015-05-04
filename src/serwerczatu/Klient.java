@@ -35,7 +35,13 @@ public class Klient
 			this.czytelnik = gniazdo.getInputStream();
 			try(Scanner in = new Scanner(czytelnik))
 			{
-				this.weryfikacja(in.nextLine(),in.nextLine());
+				String kom1=in.nextLine();
+				if (kom1.equals("loginAttempt"))
+				{
+					this.weryfikacja(in.nextLine(),in.nextLine());
+				}
+				else if (kom1.equals("registerAttempt"))
+					this.rejestracja(in.nextLine(),in.nextLine());
 			}
 			
 		}
@@ -115,5 +121,42 @@ public class Klient
 		}
 		
 	}
+	
+	public void rejestracja(String login, String password)
+	{
+		try
+		{
+			Statement stat = polaczenieZBaza.createStatement();
+			ResultSet rs = stat.executeQuery("SELECT LOGIN FROM UZYSZKODNICY ");
+			while (rs.next())
+			{
+				String tmplogin = rs.getString("LOGIN");
+				if (login.equals(tmplogin))
+				{
+					try 
+					{
+						pisarz = new PrintWriter(gniazdoKlienta.getOutputStream());
+						pisarz.println("zajete");
+						pisarz.flush();
+						return;
+					} 
+					catch (IOException e)
+					{
+						e.printStackTrace();
+					}
+				}
+			}
+			
+			stat.executeUpdate("INSERT INTO uzyszkodnicy (login,password,user_type) "+
+			"VALUES ('"+login+"','"+password+"',1.0)");
+			stat.close();
+			
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
 	
 }
