@@ -8,7 +8,10 @@ import java.util.List;
 
 public class SerwerCzatu 
 {
-	ArrayList <Klient> klienci= new ArrayList();
+	ArrayList <Klient> klienci= new ArrayList<Klient>();
+	ArrayList <Thread> watkiKlientow = new ArrayList<Thread>();
+	Klient klient;
+	Thread watek;
 	//ObslugaKlientow obslugaKlientow = new ObslugaKlientow();
 	Connection polaczenieZBaza;
 	
@@ -45,14 +48,12 @@ public class SerwerCzatu
 				Socket gniazdoKlienta = serwerSock.accept(); // program oczekuje az klient przylaczy sie do portu
 				// jesli jakis klient sie polaczy, metoda zwroci obiekt klasy SOcket repzentujacy utworzone 
 				// polaczenie
-				klienci.add(new Klient(gniazdoKlienta, polaczenieZBaza));
-				//PrintWriter pisarz = new PrintWriter(gniazdoKlienta.getOutputStream());
-				// do pisarza przypisuje strumien wyjsciowy z gniazda stworzonego wyzej
-				
-				
-				//Thread t = new Thread (new ObslugaKlientow(gniazdoKlienta)); // nowy watek na podstawie
-				// obiektu klasy wewnetrznej gniazdo klienta
-				//t.start(); // odpalony watek
+				klient = new Klient(gniazdoKlienta, polaczenieZBaza);
+				klienci.add(klient);
+				watek = new Thread(klient);
+				watkiKlientow.add(watek);
+				watek.start();
+
 				System.out.println("mamy polaczenie");	
 			}
 		}

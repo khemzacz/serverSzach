@@ -20,7 +20,7 @@ public class test {
 			try 
 			{
 				polaczenieZBaza = DriverManager.getConnection(url,username,password);
-				System.out.println("Panie! Wyglada na to ze mamy polaczenie z baza!");
+				System.out.println("Wyglada na to ze mamy polaczenie z baza!");
 				SerwerCzatu serwer = new SerwerCzatu(polaczenieZBaza);
 				serwer.serwerStart();
 			}

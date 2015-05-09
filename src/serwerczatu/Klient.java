@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
 
-public class Klient
+public class Klient implements Runnable
 {
 	private Socket gniazdoKlienta;
 	private String login;
@@ -30,26 +30,6 @@ public class Klient
 	{
 		this.gniazdoKlienta = gniazdo;
 		this.polaczenieZBaza = polaczenieZBaza;
-		try
-		{
-			this.czytelnik = gniazdo.getInputStream();
-			try(Scanner in = new Scanner(czytelnik))
-			{
-				String kom1=in.nextLine();
-				if (kom1.equals("loginAttempt"))
-				{
-					this.weryfikacja(in.nextLine(),in.nextLine());
-				}
-				else if (kom1.equals("registerAttempt"))
-					this.rejestracja(in.nextLine(),in.nextLine());
-			}
-			
-		}
-		
-		catch (IOException e) 
-		{
-			e.printStackTrace();
-		}
 		
 	}
 	
@@ -156,6 +136,32 @@ public class Klient
 		{
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public void run()
+	{
+		try
+		{
+			this.czytelnik = gniazdoKlienta.getInputStream();
+			try(Scanner in = new Scanner(czytelnik))
+			{
+				String kom1=in.nextLine();
+				if (kom1.equals("loginAttempt"))
+				{
+					this.weryfikacja(in.nextLine(),in.nextLine());
+				}
+				else if (kom1.equals("registerAttempt"))
+					this.rejestracja(in.nextLine(),in.nextLine());
+			}
+			
+		}
+		
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+		}	
+		
 	}
 	
 	
