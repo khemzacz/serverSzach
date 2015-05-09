@@ -8,13 +8,15 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
 
+import komunikacja.*;
+
 public class Klient implements Runnable
 {
 	private Socket gniazdoKlienta;
 	private String login;
 	private String password;
-	private InputStream czytelnik;
-	private PrintWriter pisarz;
+	private ObjectInputStream czytelnik;
+	private ObjectOutputStream pisarz;
 	private Connection polaczenieZBaza;
 	private Boolean loginSuccess = false;
 	
@@ -59,9 +61,8 @@ public class Klient implements Runnable
 							this.password = password;
 							System.out.println("Zalogowano uzyszkodnika: "+login);
 							try 
-							{
-								pisarz = new PrintWriter(gniazdoKlienta.getOutputStream());
-								pisarz.println("zalogowano");
+							{							
+								pisarz.writeObject(new RamkaSerwera(1,"zalogowano",""));
 								pisarz.flush();
 								loginSuccess = true;
 							} 
@@ -81,9 +82,8 @@ public class Klient implements Runnable
 			if (loginSuccess != true)
 			{
 				try 
-				{
-					pisarz = new PrintWriter(gniazdoKlienta.getOutputStream());
-					pisarz.println("bledne_dane");
+				{			
+					pisarz.writeObject(new RamkaSerwera(1,"bledne_dane",""));
 					pisarz.flush();
 				}
 				catch (IOException e1)
@@ -114,10 +114,11 @@ public class Klient implements Runnable
 				if (login.equals(tmplogin))
 				{
 					try 
-					{
-						pisarz = new PrintWriter(gniazdoKlienta.getOutputStream());
-						pisarz.println("zajete");
+					{	
+						RamkaSerwera pakiet = new RamkaSerwera(1,"zajete","");
+						pisarz.writeObject(pakiet);
 						pisarz.flush();
+						System.out.println("tu jestem"); // daje rade
 						return;
 					} 
 					catch (IOException e)
@@ -143,25 +144,33 @@ public class Klient implements Runnable
 	{
 		try
 		{
-			this.czytelnik = gniazdoKlienta.getInputStream();
-			try(Scanner in = new Scanner(czytelnik))
-			{
-				String kom1=in.nextLine();
-				if (kom1.equals("loginAttempt"))
-				{
-					this.weryfikacja(in.nextLine(),in.nextLine());
-				}
-				else if (kom1.equals("registerAttempt"))
-					this.rejestracja(in.nextLine(),in.nextLine());
-			}
 			
+			this.czytelnik = new ObjectInputStream(gniazdoKlienta.getInputStream());
+			this.pisarz = new ObjectOutputStream(gniazdoKlienta.getOutputStream());
+			pisarz.flush();
+			RamkaKlienta ramka = null;
+			while((ramka = (RamkaKlienta) czytelnik.readObject()) !=null)
+			{
+				int typ = ramka.getRodzaj();
+				System.out.println(typ);
+				switch (typ)
+				{
+					case 1:
+						this.weryfikacja(ramka.getW1(),ramka.getW2());
+						break;
+					case 2:
+						this.rejestracja(ramka.getW1(),ramka.getW2());
+						break;
+						
+				}
+
+			}
+		
 		}
-		
-		catch (IOException e) 
+		catch(Exception e)
 		{
-			e.printStackTrace();
-		}	
-		
+		 e.printStackTrace();	
+		}
 	}
 	
 	
