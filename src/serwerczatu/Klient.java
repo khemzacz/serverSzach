@@ -18,26 +18,38 @@ public class Klient implements Runnable
 	private ObjectInputStream czytelnik;
 	private ObjectOutputStream pisarz;
 	private Connection polaczenieZBaza;
+	private ArrayList<Klient> klienci;
 	private Boolean loginSuccess = false;
 	
-	Klient(String login, String password, Socket gniazdo)
+	
+	/*Klient(String login, String password, Socket gniazdo)
 	{
 		this.gniazdoKlienta = gniazdo;
 		this.login = login;
 		this.password = password;
 		
-	}
+	}*/
 	
-	Klient(Socket gniazdo, Connection polaczenieZBaza)
+	Klient(Socket gniazdo, Connection polaczenieZBaza,ArrayList<Klient> klienci)
 	{
 		this.gniazdoKlienta = gniazdo;
 		this.polaczenieZBaza = polaczenieZBaza;
-		
+		this.klienci = klienci;
 	}
 	
 	public Socket getGniazdo()
 	{
 		return gniazdoKlienta;
+	}
+	
+	public String getLogin()
+	{
+		return login;
+	}
+	
+	public Boolean getLoginSuccess()
+	{
+		return loginSuccess;
 	}
 	
 	public void weryfikacja(String login, String password)
@@ -65,6 +77,7 @@ public class Klient implements Runnable
 								pisarz.writeObject(new RamkaSerwera(1,"zalogowano",""));
 								pisarz.flush();
 								loginSuccess = true;
+								//System.out.println("udalo sie");
 							} 
 							catch (IOException e) 
 							{
@@ -138,6 +151,28 @@ public class Klient implements Runnable
 			e.printStackTrace();
 		}
 	}
+	
+	public synchronized void wyslijListeGraczy()
+	{
+		RamkaSerwera ramka = new RamkaSerwera(3,"","");
+		for (int i = 0 ;i<this.klienci.size();i++)
+		{
+			if(klienci.get(i).getLoginSuccess()==true)
+			{
+				ramka.addClientToList(klienci.get(i).getLogin());
+			}
+		}
+		try 
+		{
+			pisarz.writeObject(ramka);
+			pisarz.flush();
+		} 
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+		
+	}
 
 	@Override
 	public void run()
@@ -157,10 +192,38 @@ public class Klient implements Runnable
 				{
 					case 1:
 						this.weryfikacja(ramka.getW1(),ramka.getW2());
+						
 						break;
 					case 2:
 						this.rejestracja(ramka.getW1(),ramka.getW2());
+						
 						break;
+					case 3: //prośba o listę graczy
+						this.wyslijListeGraczy();
+						
+						break;
+					case 4: //Wiadomosc do kazdego
+						
+						break;
+					case 5: // wiadomosc do konkretnego gracza
+						
+						break;
+					case 6: //prośba o liste gier
+						
+						break;
+					case 7: //zalozenie nowej gry
+						
+						break;
+					case 8: //dolaczenie do nowej gry
+						
+						break;
+					case 9: // potwierdzenie startu
+						
+						break;
+					case 10: // pakiet z ruchem
+						
+						break;
+						
 						
 				}
 

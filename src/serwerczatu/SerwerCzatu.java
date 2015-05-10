@@ -48,10 +48,11 @@ public class SerwerCzatu
 				Socket gniazdoKlienta = serwerSock.accept(); // program oczekuje az klient przylaczy sie do portu
 				// jesli jakis klient sie polaczy, metoda zwroci obiekt klasy SOcket repzentujacy utworzone 
 				// polaczenie
-				klient = new Klient(gniazdoKlienta, polaczenieZBaza);
+				klient = new Klient(gniazdoKlienta, polaczenieZBaza,klienci);
 				klienci.add(klient);
 				watek = new Thread(klient);
 				watkiKlientow.add(watek);
+				System.out.println("tik");
 				watek.start();
 
 				System.out.println("mamy polaczenie");	
