@@ -173,7 +173,25 @@ public class Klient implements Runnable
 		}
 		
 	}
+	
+	public void wiadomoscGlobalna(String gracz, String wiadomosc)
+	{
+		for (int i =0;i<klienci.size();i++)
+		{
+			RamkaSerwera pakiet = new RamkaSerwera(4,gracz,wiadomosc);
+			try {
+				klienci.get(i).pisarz.writeObject(pakiet);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+	}
+	
 
+	
+	
 	@Override
 	public void run()
 	{
@@ -184,8 +202,9 @@ public class Klient implements Runnable
 			this.pisarz = new ObjectOutputStream(gniazdoKlienta.getOutputStream());
 			pisarz.flush();
 			RamkaKlienta ramka = null;
-			while((ramka = (RamkaKlienta) czytelnik.readObject()) !=null)
+			while(true)
 			{
+				ramka = (RamkaKlienta) czytelnik.readObject();
 				int typ = ramka.getRodzaj();
 				System.out.println(typ);
 				switch (typ)
@@ -200,10 +219,9 @@ public class Klient implements Runnable
 						break;
 					case 3: //prośba o listę graczy
 						this.wyslijListeGraczy();
-						
 						break;
 					case 4: //Wiadomosc do kazdego
-						
+						this.wiadomoscGlobalna(ramka.getW1(),ramka.getW2());
 						break;
 					case 5: // wiadomosc do konkretnego gracza
 						
