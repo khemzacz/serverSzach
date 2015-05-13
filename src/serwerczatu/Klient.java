@@ -264,6 +264,7 @@ public class Klient implements Runnable
 			//klie
 			try {
 				gniazdoKlienta.close();
+				loginSuccess = false;
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				System.out.println("ngnrtr");
