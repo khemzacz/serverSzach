@@ -14,6 +14,7 @@ public class SerwerCzatu
 	Thread watek;
 	//ObslugaKlientow obslugaKlientow = new ObslugaKlientow();
 	Connection polaczenieZBaza;
+	//Czysciciel czysciciel = new Czysciciel(this);
 	
 	SerwerCzatu(Connection polaczenieZBaza)
 	{
@@ -39,6 +40,9 @@ public class SerwerCzatu
 		}
 		
 	}
+	
+	
+	
 	public void serwerStart()
 	{
 		try {
@@ -48,13 +52,14 @@ public class SerwerCzatu
 				Socket gniazdoKlienta = serwerSock.accept(); // program oczekuje az klient przylaczy sie do portu
 				// jesli jakis klient sie polaczy, metoda zwroci obiekt klasy SOcket repzentujacy utworzone 
 				// polaczenie
-				klient = new Klient(gniazdoKlienta, polaczenieZBaza,klienci);
+				klient = new Klient(gniazdoKlienta, polaczenieZBaza,klienci,watkiKlientow);
 				klienci.add(klient);
 				watek = new Thread(klient);
 				watkiKlientow.add(watek);
-				System.out.println("tik");
+				//System.out.println("tik");
 				watek.start();
-
+				//czysciciel.czysc();
+				
 				System.out.println("mamy polaczenie");	
 			}
 		}

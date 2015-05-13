@@ -19,6 +19,7 @@ public class Klient implements Runnable
 	private ObjectOutputStream pisarz;
 	private Connection polaczenieZBaza;
 	private ArrayList<Klient> klienci;
+	ArrayList <Thread> watkiKlientow;
 	private Boolean loginSuccess = false;
 	
 	
@@ -30,11 +31,12 @@ public class Klient implements Runnable
 		
 	}*/
 	
-	Klient(Socket gniazdo, Connection polaczenieZBaza,ArrayList<Klient> klienci)
+	Klient(Socket gniazdo, Connection polaczenieZBaza,ArrayList<Klient> klienci,ArrayList<Thread> watkiKlientow)
 	{
 		this.gniazdoKlienta = gniazdo;
 		this.polaczenieZBaza = polaczenieZBaza;
 		this.klienci = klienci;
+		this.watkiKlientow = watkiKlientow;
 	}
 	
 	public Socket getGniazdo()
@@ -155,7 +157,7 @@ public class Klient implements Runnable
 	public synchronized void wyslijListeGraczy()
 	{
 		RamkaSerwera ramka = new RamkaSerwera(3,"","");
-		for (int i = 0 ;i<this.klienci.size();i++)
+		for (int i = this.klienci.size()-1; i>=0 ;i--)
 		{
 			if(klienci.get(i).getLoginSuccess()==true)
 			{
@@ -181,15 +183,19 @@ public class Klient implements Runnable
 			RamkaSerwera pakiet = new RamkaSerwera(4,gracz,wiadomosc);
 			try {
 				klienci.get(i).pisarz.writeObject(pakiet);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
+			} catch (IOException e) 
+			{
 				e.printStackTrace();
 			}
 		}
 		
 	}
 	
-
+	public void logOut()
+	{
+		
+		
+	}
 	
 	
 	@Override
@@ -241,6 +247,9 @@ public class Klient implements Runnable
 					case 10: // pakiet z ruchem
 						
 						break;
+					case 99: // wylogowanie
+						this.logOut();
+						break;
 						
 						
 				}
@@ -250,7 +259,17 @@ public class Klient implements Runnable
 		}
 		catch(Exception e)
 		{
-		 e.printStackTrace();	
+			//w sumie tu moznaby dodac obsluge kasowania klientow;
+			//int index = klienci.indexOf(this);
+			//klie
+			try {
+				gniazdoKlienta.close();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				System.out.println("ngnrtr");
+				//e1.printStackTrace();
+			}
+			e.printStackTrace();	
 		}
 	}
 	
