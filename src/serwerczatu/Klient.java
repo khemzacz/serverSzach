@@ -213,6 +213,11 @@ public class Klient extends Thread
 		
 	}
 	
+	public void zaprosGraczaDoGry()
+	{
+		// To-Do
+	}
+	
 	public void logOut()
 	{
 		
@@ -254,8 +259,8 @@ public class Klient extends Thread
 					case 5: // wiadomosc do konkretnego gracza
 						this.wiadomoscDoUsera(ramka.getW1(),ramka.getW2(),ramka.getW3());
 						break;
-					case 6: //prośba o liste gier
-						
+					case 6: //zaproszenie do Gry gracza
+						this.zaprosGraczaDoGry();
 						break;
 					case 7: //zalozenie nowej gry
 						
