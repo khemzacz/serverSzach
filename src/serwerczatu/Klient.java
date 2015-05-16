@@ -202,7 +202,7 @@ public class Klient extends Thread
 			if (klienci.get(i).getLogin().equals(odbiorca))
 			{
 				try {
-					klienci.get(i).pisarz.writeObject(new RamkaSerwera(5, nadawca,odbiorca,wiadomosc));
+					klienci.get(i).getPisarz().writeObject(new RamkaSerwera(5, nadawca,odbiorca,wiadomosc));
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
