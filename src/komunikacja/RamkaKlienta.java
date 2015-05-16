@@ -11,6 +11,7 @@ public class RamkaKlienta implements Serializable
 	private int rodzaj;
 	private String wiadomosc1;
 	private String wiadomosc2;
+	private String wiadomosc3;
 	
 	public RamkaKlienta(int r, String w1, String w2)
 	{
@@ -18,6 +19,15 @@ public class RamkaKlienta implements Serializable
 		this.wiadomosc1=w1;
 		this.wiadomosc2=w2;
 	}
+	
+	public RamkaKlienta(int r, String w1, String w2,String w3)
+	{
+		this.rodzaj=r;
+		this.wiadomosc1=w1;
+		this.wiadomosc2=w2;
+		this.wiadomosc3=w3;
+	}
+	
 	
 	public int getRodzaj()
 	{
@@ -32,6 +42,11 @@ public class RamkaKlienta implements Serializable
 	public String getW2()
 	{
 		return wiadomosc2;
+	}
+	
+	public String getW3()
+	{
+		return wiadomosc3;
 	}
 
 }

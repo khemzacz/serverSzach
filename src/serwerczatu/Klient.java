@@ -10,7 +10,7 @@ import java.util.*;
 
 import komunikacja.*;
 
-public class Klient implements Runnable
+public class Klient extends Thread
 {
 	private Socket gniazdoKlienta;
 	private String login;
@@ -18,8 +18,7 @@ public class Klient implements Runnable
 	private ObjectInputStream czytelnik;
 	private ObjectOutputStream pisarz;
 	private Connection polaczenieZBaza;
-	private ArrayList<Klient> klienci;
-	ArrayList <Thread> watkiKlientow;
+	ArrayList <Klient> klienci;
 	private Boolean loginSuccess = false;
 	
 	
@@ -31,12 +30,11 @@ public class Klient implements Runnable
 		
 	}*/
 	
-	Klient(Socket gniazdo, Connection polaczenieZBaza,ArrayList<Klient> klienci,ArrayList<Thread> watkiKlientow)
+	Klient(Socket gniazdo, Connection polaczenieZBaza,ArrayList<Klient> klienci)
 	{
 		this.gniazdoKlienta = gniazdo;
 		this.polaczenieZBaza = polaczenieZBaza;
 		this.klienci = klienci;
-		this.watkiKlientow = watkiKlientow;
 	}
 	
 	public Socket getGniazdo()
@@ -52,6 +50,11 @@ public class Klient implements Runnable
 	public Boolean getLoginSuccess()
 	{
 		return loginSuccess;
+	}
+	
+	public ObjectOutputStream getPisarz()
+	{
+		return pisarz;
 	}
 	
 	public void weryfikacja(String login, String password)
@@ -182,10 +185,29 @@ public class Klient implements Runnable
 		{
 			RamkaSerwera pakiet = new RamkaSerwera(4,gracz,wiadomosc);
 			try {
-				klienci.get(i).pisarz.writeObject(pakiet);
+				klienci.get(i).getPisarz().writeObject(pakiet);
+				klienci.get(i).getPisarz().flush();
 			} catch (IOException e) 
 			{
 				e.printStackTrace();
+			}
+		}
+		
+	}
+	
+	public void wiadomoscDoUsera(String nadawca, String odbiorca, String wiadomosc)
+	{
+		for (int i = klienci.size()-1;i>=0;i--)
+		{
+			if (klienci.get(i).getLogin().equals(odbiorca))
+			{
+				try {
+					klienci.get(i).pisarz.writeObject(new RamkaSerwera(5, nadawca,odbiorca,wiadomosc));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 			}
 		}
 		
@@ -230,7 +252,7 @@ public class Klient implements Runnable
 						this.wiadomoscGlobalna(ramka.getW1(),ramka.getW2());
 						break;
 					case 5: // wiadomosc do konkretnego gracza
-						
+						this.wiadomoscDoUsera(ramka.getW1(),ramka.getW2(),ramka.getW3());
 						break;
 					case 6: //prośba o liste gier
 						
@@ -264,7 +286,9 @@ public class Klient implements Runnable
 			//klie
 			try {
 				gniazdoKlienta.close();
-				loginSuccess = false;
+				//klienci.get(klienci.indexOf(this)).stop();//loginSuccess = false;
+				klienci.remove(this);
+
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				System.out.println("ngnrtr");

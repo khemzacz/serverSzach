@@ -12,6 +12,7 @@ public class RamkaSerwera implements Serializable
 	private int rodzaj;
 	private String wiadomosc1;
 	private String wiadomosc2;
+	private String wiadomosc3;
 	private ArrayList<String> klienci;
 	
 	
@@ -20,6 +21,15 @@ public class RamkaSerwera implements Serializable
 		this.rodzaj=r;
 		this.wiadomosc1=w1;
 		this.wiadomosc2=w2;
+		this.klienci=new ArrayList<String>();
+	}
+
+	public RamkaSerwera(int r, String w1, String w2, String w3)
+	{
+		this.rodzaj=r;
+		this.wiadomosc1=w1;
+		this.wiadomosc2=w2;
+		this.wiadomosc3=w3;
 		this.klienci=new ArrayList<String>();
 	}
 	
@@ -47,6 +57,11 @@ public class RamkaSerwera implements Serializable
 	public String getW2()
 	{
 		return wiadomosc2;
+	}
+	
+	public String getW3()
+	{
+		return wiadomosc3;
 	}
 	
 	public int getRodzaj()
