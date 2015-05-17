@@ -213,9 +213,22 @@ public class Klient extends Thread
 		
 	}
 	
-	public void zaprosGraczaDoGry()
+	public void zaprosGraczaDoGry(String zapraszajacy, String zapraszany)
 	{
-		// To-Do
+		for (int i=klienci.size()-1;i>=0;i--)
+		{
+			if(klienci.get(i).getLogin().equals(zapraszany))
+			{
+				try {
+					klienci.get(i).getPisarz().writeObject(new RamkaSerwera(6,zapraszajacy,zapraszany));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+
+		
 	}
 	
 	public void logOut()
@@ -260,7 +273,7 @@ public class Klient extends Thread
 						this.wiadomoscDoUsera(ramka.getW1(),ramka.getW2(),ramka.getW3());
 						break;
 					case 6: //zaproszenie do Gry gracza
-						this.zaprosGraczaDoGry();
+						this.zaprosGraczaDoGry(ramka.getW1(),ramka.getW2()); // kto, kogo
 						break;
 					case 7: //zalozenie nowej gry
 						
