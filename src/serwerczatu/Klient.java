@@ -13,7 +13,7 @@ import komunikacja.*;
 public class Klient extends Thread
 {
 	private Socket gniazdoKlienta;
-	private String login;
+	private String login = new String("");
 	private String password;
 	private ObjectInputStream czytelnik;
 	private ObjectOutputStream pisarz;
@@ -59,6 +59,23 @@ public class Klient extends Thread
 	
 	public void weryfikacja(String login, String password)
 	{
+		for(int i=klienci.size()-1;i>=0;i--)
+		{
+			if (klienci.get(i).getLogin().equals(login))
+			{
+				try 
+				{
+					pisarz.writeObject(new RamkaSerwera(1,"zajete",""));
+					pisarz.flush();
+				
+				} 
+				catch (IOException e) 
+				{
+					e.printStackTrace();
+				}
+				return;
+			}
+		}
 		try
 		{
 			Statement stat = polaczenieZBaza.createStatement();
@@ -122,6 +139,20 @@ public class Klient extends Thread
 	
 	public void rejestracja(String login, String password)
 	{
+		if(login.length()<3 || password.length()<3)
+		{			
+			try 
+			{
+				pisarz.writeObject(new RamkaSerwera(1,"too_short",""));
+				pisarz.flush();
+			}
+			catch (IOException e) 
+			{
+				e.printStackTrace();
+			}
+			return;
+		}
+		
 		try
 		{
 			Statement stat = polaczenieZBaza.createStatement();
@@ -149,6 +180,16 @@ public class Klient extends Thread
 			stat.executeUpdate("INSERT INTO uzyszkodnicy (login,password,user_type) "+
 			"VALUES ('"+login+"','"+password+"',1.0)");
 			stat.close();
+			try 
+			{
+				pisarz.writeObject(new RamkaSerwera(1,"zarejestrowano",""));
+				pisarz.flush();
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+			
 			
 		}
 		catch (SQLException e)
@@ -233,7 +274,18 @@ public class Klient extends Thread
 	
 	public void logOut()
 	{
-		
+		try 
+		{
+			pisarz.writeObject(new RamkaSerwera(99,"",""));
+			pisarz.flush();
+			
+			gniazdoKlienta.close();
+			klienci.remove(this); // serwer mówi dobranoc :D
+		} 
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+		}
 		
 	}
 	
