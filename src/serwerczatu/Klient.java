@@ -272,6 +272,27 @@ public class Klient extends Thread
 		
 	}
 	
+	public void utworzGre(String klient1, String klient2) // akceptujacy, zapraszajacy
+	{
+		for(int i=klienci.size()-1;i>=0;i--)
+		{
+			if(klienci.get(i).getLogin().equals(klient2))
+				{
+					try 
+					{
+						klienci.get(i).getPisarz().writeObject(new RamkaSerwera(8,klient1,""));
+						klienci.get(i).getPisarz().flush();
+					} 
+					catch (IOException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+		}
+	}
+	
+	
 	public void logOut()
 	{
 		try 
@@ -327,16 +348,16 @@ public class Klient extends Thread
 					case 6: //zaproszenie do Gry gracza
 						this.zaprosGraczaDoGry(ramka.getW1(),ramka.getW2()); // kto, kogo
 						break;
-					case 7: //zalozenie nowej gry
+					case 7: //przyjete zaproszenie -> utwórz gre 
+						this.utworzGre(ramka.getW1(),ramka.getW2()); // akceptujacy, zapraszajacy
+						break;
+					case 8: //
 						
 						break;
-					case 8: //dolaczenie do nowej gry
+					case 9: //
 						
 						break;
-					case 9: // potwierdzenie startu
-						
-						break;
-					case 10: // pakiet z ruchem
+					case 10: //
 						
 						break;
 					case 99: // wylogowanie
