@@ -13,6 +13,12 @@ public class RamkaKlienta implements Serializable
 	private String wiadomosc2;
 	private String wiadomosc3;
 	
+	private int poczatkowyWiersz;
+	private int poczatkowaKolumna;
+	
+	private int koncowyWiersz;
+	private int koncowaKolumna;
+	
 	public RamkaKlienta(int r, String w1, String w2)
 	{
 		this.rodzaj=r;
@@ -28,6 +34,16 @@ public class RamkaKlienta implements Serializable
 		this.wiadomosc3=w3;
 	}
 	
+	public RamkaKlienta(int r, String kto, String doKogo, int pw, int pk, int kw, int kk)
+	{
+		this.rodzaj=r;
+		this.poczatkowyWiersz=pw;
+		this.poczatkowaKolumna=pk;
+		this.koncowyWiersz=kw;
+		this.koncowaKolumna=kk;
+		this.wiadomosc1=kto;
+		this.wiadomosc2=doKogo;
+	}
 	
 	public int getRodzaj()
 	{
@@ -48,5 +64,25 @@ public class RamkaKlienta implements Serializable
 	{
 		return wiadomosc3;
 	}
+	
+	public int getPW()
+	{
+		return poczatkowyWiersz;
+	}
+	
+	public int getPK()
+	{
+		return poczatkowaKolumna;
+	}
 
+	public int getKW()
+	{
+		return koncowyWiersz;
+	}
+	
+	public int getKK()
+	{
+		return koncowaKolumna;
+	}
+	
 }

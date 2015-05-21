@@ -15,6 +15,11 @@ public class RamkaSerwera implements Serializable
 	private String wiadomosc3;
 	private ArrayList<String> klienci;
 	
+	private int poczatkowyWiersz;
+	private int poczatkowaKolumna;
+	
+	private int koncowyWiersz;
+	private int koncowaKolumna;
 	
 	public RamkaSerwera(int r, String w1, String w2)
 	{
@@ -37,6 +42,17 @@ public class RamkaSerwera implements Serializable
 	{
 		this.rodzaj=3;
 		this.klienci = new ArrayList<String>(klienci);
+	}
+	
+	public RamkaSerwera(int r, String kto, String doKogo, int pw, int pk, int kw, int kk)
+	{
+		this.rodzaj=r;
+		this.poczatkowyWiersz=pw;
+		this.poczatkowaKolumna=pk;
+		this.koncowyWiersz=kw;
+		this.koncowaKolumna=kk;
+		this.wiadomosc1=kto;
+		this.wiadomosc2=doKogo;
 	}
 	
 	public ArrayList <String> getClientList()
@@ -69,5 +85,24 @@ public class RamkaSerwera implements Serializable
 		return rodzaj;
 	}
 	
+	public int getPW()
+	{
+		return poczatkowyWiersz;
+	}
+	
+	public int getPK()
+	{
+		return poczatkowaKolumna;
+	}
+
+	public int getKW()
+	{
+		return koncowyWiersz;
+	}
+	
+	public int getKK()
+	{
+		return koncowaKolumna;
+	}
 	
 }
