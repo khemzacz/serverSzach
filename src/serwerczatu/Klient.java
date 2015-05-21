@@ -67,7 +67,7 @@ public class Klient extends Thread
 				{
 					pisarz.writeObject(new RamkaSerwera(1,"zajete",""));
 					pisarz.flush();
-				
+					return;
 				} 
 				catch (IOException e) 
 				{
@@ -351,7 +351,7 @@ public class Klient extends Thread
 					case 7: //przyjete zaproszenie -> utwórz gre 
 						this.utworzGre(ramka.getW1(),ramka.getW2()); // akceptujacy, zapraszajacy
 						break;
-					case 8: //
+					case 8: // Pakiet z ruchem
 						
 						break;
 					case 9: //
