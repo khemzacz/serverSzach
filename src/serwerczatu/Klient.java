@@ -292,6 +292,27 @@ public class Klient extends Thread
 		}
 	}
 	
+	public void obslugaRuchu(RamkaKlienta ramka) // DO Zrobienia!!!
+	{
+		//System.out.println("odebrano ruch!"); // potwierdzam odebrało 
+		for (int i =klienci.size()-1;i>=0;i--)
+		{
+			if (klienci.get(i).getLogin().equals(ramka.getW2()))
+			{
+				try {
+					klienci.get(i).getPisarz().writeObject(new RamkaSerwera(9,ramka.getW1(),ramka.getW2(),ramka.getPW(),ramka.getPK(),ramka.getKW(),ramka.getKK()));
+					klienci.get(i).getPisarz().flush();
+				}  //informacje o ruchu
+				catch (IOException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} 
+			}
+		}
+		
+		
+	}
 	
 	public void logOut()
 	{
@@ -352,7 +373,7 @@ public class Klient extends Thread
 						this.utworzGre(ramka.getW1(),ramka.getW2()); // akceptujacy, zapraszajacy
 						break;
 					case 8: // Pakiet z ruchem
-						
+						this.obslugaRuchu(ramka);
 						break;
 					case 9: //
 						
