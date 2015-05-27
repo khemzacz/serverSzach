@@ -374,6 +374,29 @@ public class Klient extends Thread
 		}
 	}
 	
+	public void koniecGry(RamkaKlienta ramka) //W1 -> przegrany, klient W2 -> Wygrany
+	{
+		this.setInGame(false);
+		this.setPrzeciwnik("");
+		for(int i = klienci.size()-1;i>=0;i--)
+		{
+			if (klienci.get(i).getLogin().equals(ramka.getW2()))
+			{
+				try
+				{
+					klienci.get(i).getPisarz().writeObject(new RamkaSerwera(11,"",""));
+					klienci.get(i).getPisarz().flush();
+					klienci.get(i).setInGame(false);
+					klienci.get(i).setPrzeciwnik("");
+				}
+				catch (IOException e)
+				{
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
 	@Override
 	public void run()
 	{
@@ -422,6 +445,9 @@ public class Klient extends Thread
 						break;
 					case 10: //
 						
+						break;
+					case 11:
+						koniecGry(ramka);
 						break;
 					case 99: // wylogowanie
 						this.logOut();
