@@ -20,6 +20,8 @@ public class Klient extends Thread
 	private Connection polaczenieZBaza;
 	ArrayList <Klient> klienci;
 	private Boolean loginSuccess = false;
+	private Boolean inGame=false;
+	private String przeciwnik;
 	
 	
 	/*Klient(String login, String password, Socket gniazdo)
@@ -51,6 +53,18 @@ public class Klient extends Thread
 	{
 		return loginSuccess;
 	}
+	
+	public void setInGame(Boolean inGame)
+	{this.inGame=inGame;}
+	
+	public Boolean getInGame()
+	{ return inGame; }
+	
+	public void setPrzeciwnik(String przeciwnik)
+	{this.przeciwnik = przeciwnik;}
+	
+	public String getPrzeciwnik()
+	{return przeciwnik;}
 	
 	public ObjectOutputStream getPisarz()
 	{
@@ -242,10 +256,13 @@ public class Klient extends Thread
 		{
 			if (klienci.get(i).getLogin().equals(odbiorca))
 			{
-				try {
+				try 
+				{
 					klienci.get(i).getPisarz().writeObject(new RamkaSerwera(5, nadawca,odbiorca,wiadomosc));
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
+					klienci.get(i).getPisarz().flush();
+				}
+				catch (IOException e) 
+				{
 					e.printStackTrace();
 				}
 				break;
@@ -260,10 +277,13 @@ public class Klient extends Thread
 		{
 			if(klienci.get(i).getLogin().equals(zapraszany))
 			{
-				try {
+				try
+				{
 					klienci.get(i).getPisarz().writeObject(new RamkaSerwera(6,zapraszajacy,zapraszany));
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
+					klienci.get(i).getPisarz().flush();
+				}
+				catch (IOException e) 
+				{
 					e.printStackTrace();
 				}
 			}
@@ -274,6 +294,8 @@ public class Klient extends Thread
 	
 	public void utworzGre(String klient1, String klient2) // akceptujacy, zapraszajacy
 	{
+		this.setInGame(true);
+		this.setPrzeciwnik(klient2);
 		for(int i=klienci.size()-1;i>=0;i--)
 		{
 			if(klienci.get(i).getLogin().equals(klient2))
@@ -282,10 +304,11 @@ public class Klient extends Thread
 					{
 						klienci.get(i).getPisarz().writeObject(new RamkaSerwera(8,klient1,""));
 						klienci.get(i).getPisarz().flush();
+						klienci.get(i).setInGame(true);
+						klienci.get(i).setPrzeciwnik(klient1);
 					} 
 					catch (IOException e)
 					{
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -305,13 +328,10 @@ public class Klient extends Thread
 				}  //informacje o ruchu
 				catch (IOException e)
 				{
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} 
 			}
 		}
-		
-		
 	}
 	
 	public void logOut()
@@ -328,9 +348,31 @@ public class Klient extends Thread
 		{
 			e.printStackTrace();
 		}
-		
 	}
 	
+	public void rageQuit()
+	{
+		for(int i = klienci.size()-1;i>=0;i--)// obsluga rozlaczenia podczas gry DO-ZROBIENIA
+		{
+			if (klienci.get(i).getLogin().equals(przeciwnik))
+			{
+				try
+				{
+					klienci.get(i).getPisarz().writeObject(new RamkaSerwera(10,"",""));
+					klienci.get(i).getPisarz().flush();
+				} 
+				catch (IOException e) 
+				{
+					e.printStackTrace();
+				}
+				klienci.get(i).setInGame(false);
+				klienci.get(i).setPrzeciwnik("");
+				this.setInGame(false);
+				this.setPrzeciwnik("");
+				break;
+			}
+		}
+	}
 	
 	@Override
 	public void run()
@@ -375,8 +417,8 @@ public class Klient extends Thread
 					case 8: // Pakiet z ruchem
 						this.obslugaRuchu(ramka);
 						break;
-					case 9: //
-						
+					case 9: // umyślne opuszczenie rozgrywki;
+						this.rageQuit();
 						break;
 					case 10: //
 						
@@ -396,17 +438,33 @@ public class Klient extends Thread
 			//w sumie tu moznaby dodac obsluge kasowania klientow;
 			//int index = klienci.indexOf(this);
 			//klie
-			try {
+			try 
+			{
+				if(inGame)
+				{
+					for(int i = klienci.size()-1;i>=0;i--)// obsluga rozlaczenia podczas gry DO-ZROBIENIA
+					{
+						if (klienci.get(i).getLogin().equals(przeciwnik))
+						{
+							klienci.get(i).getPisarz().writeObject(new RamkaSerwera(10,"",""));
+							klienci.get(i).getPisarz().flush();
+							klienci.get(i).setInGame(false);
+							klienci.get(i).setPrzeciwnik("");
+							break;
+						}
+					}
+				}
 				gniazdoKlienta.close();
 				//klienci.get(klienci.indexOf(this)).stop();//loginSuccess = false;
+				System.out.println("Rozłączono: "+ this.getLogin());
 				klienci.remove(this);
+				
 
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
 				System.out.println("ngnrtr");
 				//e1.printStackTrace();
 			}
-			e.printStackTrace();	
+			//e.printStackTrace();	
 		}
 	}
 	
