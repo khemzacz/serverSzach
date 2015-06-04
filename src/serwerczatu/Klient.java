@@ -352,7 +352,7 @@ public class Klient extends Thread
 	
 	public void rageQuit()
 	{
-		for(int i = klienci.size()-1;i>=0;i--)// obsluga rozlaczenia podczas gry DO-ZROBIENIA
+		for(int i = klienci.size()-1;i>=0;i--)// obsluga rozlaczenia podczas gry
 		{
 			if (klienci.get(i).getLogin().equals(przeciwnik))
 			{
@@ -384,6 +384,20 @@ public class Klient extends Thread
 			{
 				try
 				{
+					// wyslanie do bazy o winie i porazce DO-ZROBIENIA
+					
+					try
+					{
+						Statement stat = polaczenieZBaza.createStatement();
+						stat.executeUpdate("UPDATE uzyszkodnicy SET zwyciestwa = zwyciestwa + 1 WHERE LOGIN LIKE '"+ramka.getW2()+"'"); //tutaj
+						stat = polaczenieZBaza.createStatement();
+						stat.executeUpdate("UPDATE uzyszkodnicy SET porazki = porazki + 1 WHERE LOGIN LIKE '"+ramka.getW1()+"'");
+					}
+					catch (SQLException e)
+					{
+						e.printStackTrace();
+					}
+					
 					klienci.get(i).getPisarz().writeObject(new RamkaSerwera(11,"",""));
 					klienci.get(i).getPisarz().flush();
 					klienci.get(i).setInGame(false);
@@ -395,6 +409,40 @@ public class Klient extends Thread
 				}
 			}
 		}
+	}
+	
+	public void statystyki(RamkaKlienta Ramka)
+	{
+		int tmp_P=0,tmp_W=0;
+		
+		try {
+			Statement stat = polaczenieZBaza.createStatement();
+			ResultSet rs = stat.executeQuery("SELECT zwyciestwa FROM uzyszkodnicy WHERE login LIKE '"+login+"'");
+			rs.next();
+			tmp_W = rs.getInt("zwyciestwa"); // to jest ok
+			//System.out.println("Wartosc tmp:"+tmp_P);
+			stat = polaczenieZBaza.createStatement();
+			rs = stat.executeQuery("SELECT porazki FROM uzyszkodnicy WHERE login LIKE '"+login+"'");
+			rs.next();
+			tmp_P = rs.getInt("porazki");
+			
+			try {
+				String jeden = String.valueOf(tmp_W); // to tez niby ok
+				//System.out.println("Wartosc tmp:"+jeden);
+				String dwa = String.valueOf(tmp_P);
+				RamkaSerwera pakiet = new RamkaSerwera(12,jeden,dwa);
+				pisarz.writeObject(pakiet);
+				pisarz.flush();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			
+		} catch (SQLException e) 
+		{
+			e.printStackTrace();
+		}
+
 	}
 	
 	@Override
@@ -443,11 +491,14 @@ public class Klient extends Thread
 					case 9: // umyślne opuszczenie rozgrywki;
 						this.rageQuit();
 						break;
-					case 10: //
-						
+					case 10: // po nr 10 sie psuje??
+						//this.statystyki(ramka);
 						break;
 					case 11:
 						koniecGry(ramka);
+						break;
+					case 15:
+						this.statystyki(ramka);
 						break;
 					case 99: // wylogowanie
 						this.logOut();
@@ -461,9 +512,6 @@ public class Klient extends Thread
 		}
 		catch(Exception e)
 		{
-			//w sumie tu moznaby dodac obsluge kasowania klientow;
-			//int index = klienci.indexOf(this);
-			//klie
 			try 
 			{
 				if(inGame)
@@ -483,6 +531,7 @@ public class Klient extends Thread
 				gniazdoKlienta.close();
 				//klienci.get(klienci.indexOf(this)).stop();//loginSuccess = false;
 				System.out.println("Rozłączono: "+ this.getLogin());
+				e.printStackTrace();
 				klienci.remove(this);
 				
 
