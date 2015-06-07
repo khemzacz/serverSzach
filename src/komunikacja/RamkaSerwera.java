@@ -30,6 +30,7 @@ public class RamkaSerwera implements Serializable
 		this.wiadomosc1=w1;
 		this.wiadomosc2=w2;
 		this.klienci=new ArrayList<String>();
+		this.znajomi=new DefaultListModel<String>();
 	}
 
 	public RamkaSerwera(int r, String w1, String w2, String w3)
@@ -112,10 +113,4 @@ public class RamkaSerwera implements Serializable
 	{
 		return znajomi;
 	}
-	
-	public void setZnajomi(DefaultListModel<String> list)
-	{
-		this.znajomi = list;
-	}
-	
 }

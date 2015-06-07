@@ -464,7 +464,6 @@ public class Klient extends Thread
 		try {
 			stat = polaczenieZBaza.createStatement();
 			ResultSet rs = stat.executeQuery("SELECT friend FROM znajomi WHERE login LIKE '"+ramka.getW1()+"'");
-			DefaultListModel <String> kontakty = new DefaultListModel<String>();
 			RamkaSerwera pakiet = new RamkaSerwera(17,"","");
 			String tmp;
 			Boolean flag= true;
@@ -475,15 +474,15 @@ public class Klient extends Thread
 				{
 					if (pom.getLogin().equals(tmp))
 					{
-						kontakty.addElement(tmp +" - OnLine");
+						pakiet.getZnajomi().addElement(tmp +" - OnLine");
 						flag=false;
 					}
 				}
 				if(flag==true)
-				kontakty.addElement(tmp+" - OffLine");
+				pakiet.getZnajomi().addElement(tmp+" - OffLine");
 			}
-			
-			pakiet.setZnajomi(kontakty);
+
+			System.out.println(pakiet.getZnajomi());
 			try {
 				pisarz.writeObject(pakiet);
 				pisarz.flush();
@@ -509,7 +508,6 @@ public class Klient extends Thread
 	{
 		try
 		{
-			
 			this.czytelnik = new ObjectInputStream(gniazdoKlienta.getInputStream());
 			this.pisarz = new ObjectOutputStream(gniazdoKlienta.getOutputStream());
 			pisarz.flush();
