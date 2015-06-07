@@ -3,6 +3,8 @@ package komunikacja;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import javax.swing.DefaultListModel;
+
 public class RamkaSerwera implements Serializable
 {
 	/**
@@ -14,6 +16,7 @@ public class RamkaSerwera implements Serializable
 	private String wiadomosc2;
 	private String wiadomosc3;
 	private ArrayList<String> klienci;
+	private DefaultListModel<String> znajomi;
 	
 	private int poczatkowyWiersz;
 	private int poczatkowaKolumna;
@@ -103,6 +106,16 @@ public class RamkaSerwera implements Serializable
 	public int getKK()
 	{
 		return koncowaKolumna;
+	}
+	
+	public DefaultListModel<String> getZnajomi()
+	{
+		return znajomi;
+	}
+	
+	public void setZnajomi(DefaultListModel<String> list)
+	{
+		this.znajomi = list;
 	}
 	
 }

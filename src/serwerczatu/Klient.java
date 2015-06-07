@@ -8,6 +8,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
 
+import javax.swing.DefaultListModel;
+
 import komunikacja.*;
 
 public class Klient extends Thread
@@ -153,7 +155,7 @@ public class Klient extends Thread
 	
 	public void rejestracja(String login, String password)
 	{
-		if(login.length()<3 || password.length()<3)
+		if(login.length()<3 || password.length()<3 || login.contains("-") || login.contains("/") || login.length()>16)
 		{			
 			try 
 			{
@@ -166,6 +168,8 @@ public class Klient extends Thread
 			}
 			return;
 		}
+		
+		
 		
 		try
 		{
@@ -445,7 +449,62 @@ public class Klient extends Thread
 
 	}
 	
-	@Override
+	public void znajomi(RamkaKlienta ramka)
+	{
+		Statement stat;
+		try {
+			stat = polaczenieZBaza.createStatement();
+			stat.executeUpdate("INSERT INTO znajomi(login,friend) VALUES ('"+login+"','"+ramka.getW1()+"')");
+		} catch (SQLException e){e.printStackTrace();}
+	}
+	
+	public void listaKontaktow(RamkaKlienta ramka)
+	{
+		Statement stat;
+		try {
+			stat = polaczenieZBaza.createStatement();
+			ResultSet rs = stat.executeQuery("SELECT friend FROM znajomi WHERE login LIKE '"+ramka.getW1()+"'");
+			DefaultListModel <String> kontakty = new DefaultListModel<String>();
+			RamkaSerwera pakiet = new RamkaSerwera(17,"","");
+			String tmp;
+			Boolean flag= true;
+			while (rs.next())
+			{
+				tmp = rs.getString("friend");
+				for (Klient pom : klienci)
+				{
+					if (pom.getLogin().equals(tmp))
+					{
+						kontakty.addElement(tmp +" - OnLine");
+						flag=false;
+					}
+				}
+				if(flag==true)
+				kontakty.addElement(tmp+" - OffLine");
+			}
+			
+			pakiet.setZnajomi(kontakty);
+			try {
+				pisarz.writeObject(pakiet);
+				pisarz.flush();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} catch (SQLException e) {e.printStackTrace();}
+	}
+	
+	public void kasujKontakt(RamkaKlienta ramka)
+	{
+		try {
+			Statement stat = polaczenieZBaza.createStatement();
+			stat.executeUpdate("DELETE FROM znajomi WHERE login LIKE '"+login+"' AND friend LIKE '"+ramka.getW1()+"'");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
 	public void run()
 	{
 		try
@@ -499,6 +558,15 @@ public class Klient extends Thread
 						break;
 					case 15:
 						this.statystyki(ramka);
+						break;
+					case 16:
+						this.znajomi(ramka);
+						break;
+					case 17:
+						this.listaKontaktow(ramka);
+						break;
+					case 18:
+						this.kasujKontakt(ramka);
 						break;
 					case 99: // wylogowanie
 						this.logOut();
