@@ -455,7 +455,14 @@ public class Klient extends Thread
 		try {
 			stat = polaczenieZBaza.createStatement();
 			stat.executeUpdate("INSERT INTO znajomi(login,friend) VALUES ('"+login+"','"+ramka.getW1()+"')");
-		} catch (SQLException e){e.printStackTrace();}
+		} catch (SQLException e){
+			try {
+				pisarz.writeObject(new RamkaSerwera(24,"",""));
+				pisarz.flush();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+			e.printStackTrace();}
 	}
 	
 	public void listaKontaktow(RamkaKlienta ramka)
@@ -498,7 +505,12 @@ public class Klient extends Thread
 			Statement stat = polaczenieZBaza.createStatement();
 			stat.executeUpdate("DELETE FROM znajomi WHERE login LIKE '"+login+"' AND friend LIKE '"+ramka.getW1()+"'");
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			try {
+				pisarz.writeObject(new RamkaSerwera(23,"",""));
+				pisarz.flush();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 			e.printStackTrace();
 		}
 	}
