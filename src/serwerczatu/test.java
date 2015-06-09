@@ -4,40 +4,15 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class test {
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 
-	public static Connection polaczenieZBaza;
+public class test  {
 	
 	
 	public static void main(String[] args) 
 	{
-		try 
-		{
-			Class.forName("org.postgresql.Driver");
-			String url= "jdbc:postgresql://127.0.0.1:5432/postgres";
-			String username = "postgres";
-			String password = "kefir1000";
-			try 
-			{
-				polaczenieZBaza = DriverManager.getConnection(url,username,password);
-				System.out.println("Wyglada na to ze mamy polaczenie z baza!");
-				SerwerCzatu serwer = new SerwerCzatu(polaczenieZBaza);
-				Thread mainServerThread = new Thread(serwer);
-				mainServerThread.start();
-
-			}
-			catch (SQLException e)
-			{
-				System.out.println("nie polaczono z baza");
-			}
-		} 
-		catch (ClassNotFoundException e1)
-		{
-			System.out.println("problemy ze sterownikiem bazy");
-		}
-
-
-		
+		new Gui().run();
 	}
 
 }
