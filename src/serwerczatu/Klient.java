@@ -354,7 +354,7 @@ public class Klient extends Thread
 		}
 	}
 	
-	public void rageQuit()
+	public void rageQuit(RamkaKlienta ramka)
 	{
 		for(int i = klienci.size()-1;i>=0;i--)// obsluga rozlaczenia podczas gry
 		{
@@ -364,6 +364,18 @@ public class Klient extends Thread
 				{
 					klienci.get(i).getPisarz().writeObject(new RamkaSerwera(10,"",""));
 					klienci.get(i).getPisarz().flush();
+					
+
+					try {
+						Statement stat = polaczenieZBaza.createStatement();
+						stat.executeUpdate("UPDATE uzyszkodnicy SET zwyciestwa = zwyciestwa + 1 WHERE LOGIN LIKE '"+ramka.getW2()+"'");
+						stat = polaczenieZBaza.createStatement();
+						stat.executeUpdate("UPDATE uzyszkodnicy SET porazki = porazki + 1 WHERE LOGIN LIKE '"+ramka.getW1()+"'");
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} //tutaj
+					
 				} 
 				catch (IOException e) 
 				{
@@ -558,7 +570,7 @@ public class Klient extends Thread
 						this.obslugaRuchu(ramka);
 						break;
 					case 9: // umyślne opuszczenie rozgrywki;
-						this.rageQuit();
+						this.rageQuit(ramka);
 						break;
 					case 10: // po nr 10 sie psuje??
 						//this.statystyki(ramka);
