@@ -95,13 +95,13 @@ public class Klient extends Thread
 		try
 		{
 			Statement stat = polaczenieZBaza.createStatement();
-			ResultSet rs = stat.executeQuery("SELECT LOGIN FROM UZYSZKODNICY ");
+			ResultSet rs = stat.executeQuery("SELECT LOGIN FROM users ");
 			while (rs.next())
 			{
 				String tmplogin = rs.getString("LOGIN");
 				if (login.equals(tmplogin))
 				{
-					ResultSet rs2 = stat.executeQuery("SELECT password"+  " FROM UZYSZKODNICY" +  " WHERE UZYSZKODNICY.LOGIN LIKE '"+login+"' ");
+					ResultSet rs2 = stat.executeQuery("SELECT password"+  " FROM users" +  " WHERE users.LOGIN LIKE '"+login+"' ");
 					rs2.next();
 					String tmppass = rs2.getString("password");
 					{
@@ -174,7 +174,7 @@ public class Klient extends Thread
 		try
 		{
 			Statement stat = polaczenieZBaza.createStatement();
-			ResultSet rs = stat.executeQuery("SELECT LOGIN FROM UZYSZKODNICY ");
+			ResultSet rs = stat.executeQuery("SELECT LOGIN FROM users ");
 			while (rs.next())
 			{
 				String tmplogin = rs.getString("LOGIN");
@@ -195,7 +195,7 @@ public class Klient extends Thread
 				}
 			}
 			
-			stat.executeUpdate("INSERT INTO uzyszkodnicy (login,password,user_type) "+
+			stat.executeUpdate("INSERT INTO users (login,password,user_type) "+
 			"VALUES ('"+login+"','"+password+"',1.0)");
 			stat.close();
 			try 
@@ -368,9 +368,9 @@ public class Klient extends Thread
 
 					try {
 						Statement stat = polaczenieZBaza.createStatement();
-						stat.executeUpdate("UPDATE uzyszkodnicy SET zwyciestwa = zwyciestwa + 1 WHERE LOGIN LIKE '"+ramka.getW2()+"'");
+						stat.executeUpdate("UPDATE users SET zwyciestwa = zwyciestwa + 1 WHERE LOGIN LIKE '"+ramka.getW2()+"'");
 						stat = polaczenieZBaza.createStatement();
-						stat.executeUpdate("UPDATE uzyszkodnicy SET porazki = porazki + 1 WHERE LOGIN LIKE '"+ramka.getW1()+"'");
+						stat.executeUpdate("UPDATE users SET porazki = porazki + 1 WHERE LOGIN LIKE '"+ramka.getW1()+"'");
 					} catch (SQLException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -405,9 +405,9 @@ public class Klient extends Thread
 					try
 					{
 						Statement stat = polaczenieZBaza.createStatement();
-						stat.executeUpdate("UPDATE uzyszkodnicy SET zwyciestwa = zwyciestwa + 1 WHERE LOGIN LIKE '"+ramka.getW2()+"'"); //tutaj
+						stat.executeUpdate("UPDATE users SET zwyciestwa = zwyciestwa + 1 WHERE LOGIN LIKE '"+ramka.getW2()+"'"); //tutaj
 						stat = polaczenieZBaza.createStatement();
-						stat.executeUpdate("UPDATE uzyszkodnicy SET porazki = porazki + 1 WHERE LOGIN LIKE '"+ramka.getW1()+"'");
+						stat.executeUpdate("UPDATE users SET porazki = porazki + 1 WHERE LOGIN LIKE '"+ramka.getW1()+"'");
 					}
 					catch (SQLException e)
 					{
@@ -433,12 +433,12 @@ public class Klient extends Thread
 		
 		try {
 			Statement stat = polaczenieZBaza.createStatement();
-			ResultSet rs = stat.executeQuery("SELECT zwyciestwa FROM uzyszkodnicy WHERE login LIKE '"+login+"'");
+			ResultSet rs = stat.executeQuery("SELECT zwyciestwa FROM users WHERE login LIKE '"+login+"'");
 			rs.next();
 			tmp_W = rs.getInt("zwyciestwa"); // to jest ok
 			//System.out.println("Wartosc tmp:"+tmp_P);
 			stat = polaczenieZBaza.createStatement();
-			rs = stat.executeQuery("SELECT porazki FROM uzyszkodnicy WHERE login LIKE '"+login+"'");
+			rs = stat.executeQuery("SELECT porazki FROM users WHERE login LIKE '"+login+"'");
 			rs.next();
 			tmp_P = rs.getInt("porazki");
 			
